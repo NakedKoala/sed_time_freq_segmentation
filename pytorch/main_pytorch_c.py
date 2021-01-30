@@ -25,6 +25,7 @@ from features import LogMelExtractor
 from models_pytorch import move_data_to_gpu, get_model
 # import config
 from config_c import config
+import wandb
 
 batch_size = 8
 
@@ -145,7 +146,10 @@ def forward(model, generate_func, return_target, return_bottleneck, cuda):
     return dict
 
 
-def train(config):
+def train(config, args):
+    # Wanbd setup
+  
+    wandb.init(project="covid", entity="sirgarfield", name=args.run_name)
 
     # Arugments & parameters
     workspace = config.workspace
@@ -172,6 +176,7 @@ def train(config):
     Model = get_model(model_type)
     
     model = Model(classes_num, seq_len, mel_bins, cuda)
+    wandb.watch(model)
 
     if cuda:
         model.cuda()
@@ -182,7 +187,7 @@ def train(config):
                               holdout_fold=holdout_fold)
 
     # Optimizer
-    optimizer = optim.Adam(model.parameters(), lr=1e-3, betas=(0.9, 0.999),
+    optimizer = optim.Adam(model.parameters(), lr=1e-3 / 3, betas=(0.9, 0.999),
                            eps=1e-08, weight_decay=0.)
 
     train_bgn_time = time.time()
@@ -201,6 +206,12 @@ def train(config):
                                          max_iteration=max_iteration,
                                          cuda=cuda)
 
+            wandb.log({'iteration': iteration, 
+                       'tr_loss': tr_loss,
+                       'tr_f1_score': tr_auc, 
+                       'tr_map': tr_map })
+
+
             logging.info('tr_loss: {:.3f}, tr_f1_score: {:.3f}, '
                 'tr_auc: {:.3f}, tr_map: {:.3f}'
                 ''.format(tr_loss, tr_f1_score, tr_auc, tr_map))
@@ -210,6 +221,11 @@ def train(config):
                                             data_type='validate',
                                             max_iteration=max_iteration,
                                             cuda=cuda)
+        
+            wandb.log({'iteration': iteration, 
+                       'va_loss': va_loss,
+                       'va_f1_score': va_auc, 
+                       'va_map': va_map })
                             
             logging.info('va_loss: {:.3f}, va_f1_score: {:.3f}, '
                 'va_auc: {:.3f}, va_map: {:.3f}'
@@ -238,6 +254,9 @@ def train(config):
                 models_dir, 'md_{}_iters.tar'.format(iteration))
                 
             torch.save(save_out_dict, save_out_path)
+            # Save state to wandb 
+            torch.save(save_out_dict, os.path.join(wandb.run.dir, 'md_{}_iters.tar'.format(iteration)))
+
             logging.info('Model saved to {}'.format(save_out_path))
             
         # Reduce learning rate
@@ -512,12 +531,16 @@ def inference(args):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Example of parser')
+    parser_train.add_argument('--run_name', type=str, required=True)
+    args = parser.parse_args()
+
     config.filename = get_filename(__file__)
     # Create log
     logs_dir = os.path.join(config.workspace, 'logs',  config.filename)
     create_logging(logs_dir, filemode='w')
     logging.info(config)
-    train(config)
+    train(config, args)
 
     # if args.mode == 'train':
     #     train(config)
