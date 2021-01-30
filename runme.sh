@@ -1,9 +1,10 @@
 #!/bin/bash
-DCASE2018_TASK1_DATASET_DIR="/vol/vssp/datasets/audio/dcase2018/task1/TUT-urban-acoustic-scenes-2018-development"
-DCASE2018_TASK2_DATASET_DIR="/vol/vssp/datasets/audio/dcase2018/task2"
-
-WORKSPACE="/vol/vssp/msos/qk/workspaces/weak_source_separation/dcase2018_task2"
-
+# DCASE2018_TASK1_DATASET_DIR="/vol/vssp/datasets/audio/dcase2018/task1/TUT-urban-acoustic-scenes-2018-development"
+# DCASE2018_TASK2_DATASET_DIR="/vol/vssp/datasets/audio/dcase2018/task2"
+DCASE2018_TASK2_DATASET_DIR="/content/FSDKaggle2018.audio_train"
+DCASE2018_TASK1_DATASET_DIR="/content/TUT-urban-acoustic-scenes-2018-development"
+# WORKSPACE="/vol/vssp/msos/qk/workspaces/weak_source_separation/dcase2018_task2"
+WORKSPACE="/content/workspace"
 # Create DCASE 2018 Task 2 cross-validation csv. Only manually verified sound events are used for cross validation. 
 python3 utils/create_mixture_yaml.py create_dcase2018_task2_cross_validation_csv --dcase2018_task2_dataset_dir=$DCASE2018_TASK2_DATASET_DIR --workspace=$WORKSPACE
 
