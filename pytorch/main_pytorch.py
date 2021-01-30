@@ -24,7 +24,7 @@ from utilities import (get_filename, create_logging, create_folder,
 from features import LogMelExtractor
 from models_pytorch import move_data_to_gpu, get_model
 import config
-
+import wandb
 
 batch_size = 24
 
@@ -147,6 +147,7 @@ def forward(model, generate_func, return_target, return_bottleneck, cuda):
 
 def train(args):
 
+    wandb.init(project="covid", entity="sirgarfield", name=args.run_name)
     # Arugments & parameters
     workspace = args.workspace
     model_type = args.model_type
@@ -205,6 +206,10 @@ def train(args):
                                          data_type='train',
                                          max_iteration=max_iteration,
                                          cuda=cuda)
+            wandb.log({'iteration': iteration, 
+                       'tr_loss': tr_loss,
+                       'tr_f1_score': tr_auc, 
+                       'tr_map': tr_map })
 
             logging.info('tr_loss: {:.3f}, tr_f1_score: {:.3f}, '
                 'tr_auc: {:.3f}, tr_map: {:.3f}'
@@ -215,6 +220,10 @@ def train(args):
                                             data_type='validate',
                                             max_iteration=max_iteration,
                                             cuda=cuda)
+            wandb.log({'iteration': iteration, 
+                       'va_loss': va_loss,
+                       'va_f1_score': va_auc, 
+                       'va_map': va_map })
                             
             logging.info('va_loss: {:.3f}, va_f1_score: {:.3f}, '
                 'va_auc: {:.3f}, va_map: {:.3f}'
@@ -241,6 +250,9 @@ def train(args):
                              
             save_out_path = os.path.join(
                 models_dir, 'md_{}_iters.tar'.format(iteration))
+            # Save state to wandb 
+            torch.save(save_out_dict, os.path.join(wandb.run.dir, 'md_{}_iters.tar'.format(iteration)))
+
                 
             torch.save(save_out_dict, save_out_path)
             logging.info('Model saved to {}'.format(save_out_path))
@@ -527,6 +539,7 @@ if __name__ == '__main__':
     parser_train.add_argument('--snr', type=int, required=True)
     parser_train.add_argument('--holdout_fold', type=int)
     parser_train.add_argument('--cuda', action='store_true', default=False)
+    parser_train.add_argument('--run_name', type=str, required=True)
 
     parser_inference = subparsers.add_parser('inference')
     parser_inference.add_argument('--workspace', type=str, required=True)
