@@ -47,3 +47,12 @@ class config:
   lb_to_ix = {lb: i for i, lb in enumerate(labels)}
   ix_to_lb = {i: lb for i, lb in enumerate(labels)}
 
+     
+  model_type = 'gwrp'  # 'gmp' | 'gap' | 'gwrp'
+
+  holdout_fold = 1
+  cuda = True
+  model_dir = base_dir/'models'
+
+   
+

@@ -8,17 +8,18 @@ WORKSPACE="/content/workspace/"
 
 
 # Create YAML
-python3 create_yaml_c.py
+python3 ./utils/create_yaml_c.py
 
 
 # Calculate features
-python3 features_c.py
+python3 ./utils/features_c.py
 
-# Train
-MODEL_TYPE="gwrp"    # 'gmp' | 'gap' | 'gwrp'
-HOLDOUT_FOLD=1
-SNR=0
-CUDA_VISIBLE_DEVICES=0 python3 pytorch/main_pytorch.py train --workspace=$WORKSPACE --model_type=$MODEL_TYPE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD --cuda
+python ./pytorch/main_pytorch_c.py
+# # Train
+# MODEL_TYPE="gwrp"    # 'gmp' | 'gap' | 'gwrp'
+# HOLDOUT_FOLD=1
+# SNR=0
+# CUDA_VISIBLE_DEVICES=0 python3 pytorch/main_pytorch.py train --workspace=$WORKSPACE --model_type=$MODEL_TYPE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD --cuda
 
 # # Inference
 # CUDA_VISIBLE_DEVICES=0 python3 pytorch/main_pytorch.py inference --workspace=$WORKSPACE --model_type=$MODEL_TYPE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD --iteration=10000 --cuda
