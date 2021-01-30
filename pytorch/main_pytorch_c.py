@@ -17,7 +17,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-from data_generator import DataGenerator, InferenceDataGenerator
+from data_generator_c import DataGenerator, InferenceDataGenerator
 from utilities import (get_filename, create_logging, create_folder, 
                        prec_recall_fvalue, search_meta_by_mixture_name, 
                        get_sed_from_meta, ideal_binary_mask)
@@ -26,7 +26,7 @@ from models_pytorch import move_data_to_gpu, get_model
 # import config
 from config_c import config
 
-batch_size = 24
+batch_size = 8
 
 
 def evaluate(model, generator, data_type, max_iteration, cuda):

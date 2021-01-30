@@ -132,7 +132,7 @@ class VggishBottleneck(nn.Module):
         x = self.conv_block3(x)
         x = self.conv_block4(x)
 
-        bottleneck = F.sigmoid(self.final_conv(x))
+        bottleneck = torch.sigmoid(self.final_conv(x))
         '''(samples_num, classes_num, time_steps, freq_bins)'''
         
         return bottleneck
