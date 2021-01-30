@@ -27,7 +27,7 @@ from models_pytorch import move_data_to_gpu, get_model
 from config_c import config
 import wandb
 
-batch_size = 6
+batch_size = 8
 
 
 def evaluate(model, generator, data_type, max_iteration, cuda):
@@ -176,7 +176,7 @@ def train(config, args):
     Model = get_model(model_type)
     
     model = Model(classes_num, seq_len, mel_bins, cuda)
-    wandb.watch(model)
+    # wandb.watch(model)
 
     if cuda:
         model.cuda()
