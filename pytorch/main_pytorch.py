@@ -279,6 +279,8 @@ def train(args):
         # Stop learning
         if iteration == 10000:
             break
+
+    wandb.finish()
             
             
 def inference(args):
