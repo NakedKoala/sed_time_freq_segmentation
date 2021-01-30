@@ -208,6 +208,7 @@ def train(args):
                                          cuda=cuda)
             wandb.log({'iteration': iteration, 
                        'tr_loss': tr_loss,
+                       'tr_auc': tr_auc,
                        'tr_f1_score': tr_auc, 
                        'tr_map': tr_map })
 
@@ -222,6 +223,7 @@ def train(args):
                                             cuda=cuda)
             wandb.log({'iteration': iteration, 
                        'va_loss': va_loss,
+                       'va_auc': va_auc,
                        'va_f1_score': va_auc, 
                        'va_map': va_map })
                             
