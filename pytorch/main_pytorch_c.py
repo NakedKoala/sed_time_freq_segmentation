@@ -532,7 +532,7 @@ def inference(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Example of parser')
-    parser_train.add_argument('--run_name', type=str, required=True)
+    parser.add_argument('--run_name', type=str, required=True)
     args = parser.parse_args()
 
     config.filename = get_filename(__file__)
