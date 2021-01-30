@@ -1,10 +1,11 @@
 #!/bin/bash
-# DCASE2018_TASK1_DATASET_DIR="/vol/vssp/datasets/audio/dcase2018/task1/TUT-urban-acoustic-scenes-2018-development"
-# DCASE2018_TASK2_DATASET_DIR="/vol/vssp/datasets/audio/dcase2018/task2"
-DCASE2018_TASK2_DATASET_DIR="/content/sed_time_freq_segmentation/FSDKaggle2018.audio_train"
-DCASE2018_TASK1_DATASET_DIR="/content/sed_time_freq_segmentation/TUT-urban-acoustic-scenes-2018-development"
+
+
+DCASE2018_TASK2_DATASET_DIR="/content/FSDKaggle2018"
+DCASE2018_TASK1_DATASET_DIR="/content/TUT-urban-acoustic-scenes-2018-development"
 # WORKSPACE="/vol/vssp/msos/qk/workspaces/weak_source_separation/dcase2018_task2"
-WORKSPACE="/content/sed_time_freq_segmentation/"
+WORKSPACE="/content/workspace/"
+
 # Create DCASE 2018 Task 2 cross-validation csv. Only manually verified sound events are used for cross validation. 
 python3 utils/create_mixture_yaml.py create_dcase2018_task2_cross_validation_csv --dcase2018_task2_dataset_dir=$DCASE2018_TASK2_DATASET_DIR --workspace=$WORKSPACE
 
@@ -19,12 +20,12 @@ python3 utils/create_mixed_audio.py --dcase2018_task1_dataset_dir=$DCASE2018_TAS
 python3 utils/features.py logmel --workspace=$WORKSPACE --scene_type=dcase2018_task1 --snr=$SNR
 
 # Train
-MODEL_TYPE="gmp"    # 'gmp' | 'gap' | 'gwrp'
+MODEL_TYPE="gwrp"    # 'gmp' | 'gap' | 'gwrp'
 HOLDOUT_FOLD=1
-CUDA_VISIBLE_DEVICES=1 python3 pytorch/main_pytorch.py train --workspace=$WORKSPACE --model_type=$MODEL_TYPE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD --cuda
+CUDA_VISIBLE_DEVICES=0 python3 pytorch/main_pytorch.py train --workspace=$WORKSPACE --model_type=$MODEL_TYPE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD --cuda
 
 # Inference
-CUDA_VISIBLE_DEVICES=1 python3 pytorch/main_pytorch.py inference --workspace=$WORKSPACE --model_type=$MODEL_TYPE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD --iteration=10000 --cuda
+CUDA_VISIBLE_DEVICES=0 python3 pytorch/main_pytorch.py inference --workspace=$WORKSPACE --model_type=$MODEL_TYPE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD --iteration=10000 --cuda
 
 # Get average statistics
 python3 utils/get_avg_stats.py single_fold --workspace=$WORKSPACE --filename=main_pytorch --model_type=$MODEL_TYPE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD 
@@ -38,4 +39,4 @@ python3 utils/get_avg_stats.py all_fold --workspace=$WORKSPACE --filename=main_p
 python3 utils/visualize.py waveform --workspace=$WORKSPACE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD --cuda
 
 # Visualze learned segmentation masks & SED results
-CUDA_VISIBLE_DEVICES=1 python3 utils/visualize.py mel_masks --workspace=$WORKSPACE --model_type=$MODEL_TYPE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD --iteration=10000 --cuda
+CUDA_VISIBLE_DEVICES=0 python3 utils/visualize.py mel_masks --workspace=$WORKSPACE --model_type=$MODEL_TYPE --scene_type=dcase2018_task1 --snr=$SNR --holdout_fold=$HOLDOUT_FOLD --iteration=10000 --cuda
