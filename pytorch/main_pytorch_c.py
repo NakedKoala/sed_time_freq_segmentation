@@ -176,6 +176,12 @@ def train(config, args):
     Model = get_model(model_type)
     
     model = Model(classes_num, seq_len, mel_bins, cuda)
+
+    if config.use_pretrain:
+        print('Loading pretrained weight ... ')
+        checkpoint = torch.load(config.pretrain_weight)
+        model.load_state_dict(checkpoint['state_dict'])
+    
     # wandb.watch(model)
 
     if cuda:

@@ -53,6 +53,8 @@ class config:
   holdout_fold = 1
   cuda = True
   model_dir = base_dir/'models'
+  use_pretrain = True 
+  pretrain_weight = model_dir/'pretrained.tar'
 
    
 
