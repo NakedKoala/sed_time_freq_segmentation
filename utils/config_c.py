@@ -54,7 +54,7 @@ class config:
   cuda = True
   model_dir = workspace/'pretrained_models'
   use_pretrain = True 
-  pretrain_weight = model_dir/'pretrained.tar'
+  pretrain_weight = model_dir/'md_9000_iters.tar'
 
    
 
