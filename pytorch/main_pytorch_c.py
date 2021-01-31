@@ -185,7 +185,7 @@ def train(config, args):
         model_dict = model.state_dict()
        
         # 1. filter out unnecessary keys
-        pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+        pretrained_dict = {k: v for k, v in pretrained_dict.items() if 'final_conv' not in k}
         print(f' {len(pretrained_dict.keys())}/{len(model_dict.keys())} keys updated ')     
         # 2. overwrite entries in the existing state dict
         model_dict.update(pretrained_dict) 
