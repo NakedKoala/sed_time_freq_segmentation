@@ -180,11 +180,13 @@ def train(config, args):
     if config.use_pretrain:
         print('Loading pretrained weight ... ')
         checkpoint = torch.load(config.pretrain_weight)
-        
+
         pretrained_dict = checkpoint['state_dict']
         model_dict = model.state_dict()
+       
         # 1. filter out unnecessary keys
         pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+        print(f' {len(pretrained_dict.keys())}/{len(model_dict.keys())} keys updated ')     
         # 2. overwrite entries in the existing state dict
         model_dict.update(pretrained_dict) 
         # 3. load the new state dict
