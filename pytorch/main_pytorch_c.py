@@ -190,7 +190,7 @@ def train(config, args):
         # 2. overwrite entries in the existing state dict
         model_dict.update(pretrained_dict) 
         # 3. load the new state dict
-        model.load_state_dict(pretrained_dict)
+        model.load_state_dict(model_dict)
     
     # wandb.watch(model)
 
