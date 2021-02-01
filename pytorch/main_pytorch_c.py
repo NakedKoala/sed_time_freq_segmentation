@@ -20,7 +20,7 @@ import torch.optim as optim
 from data_generator_c import DataGenerator, InferenceDataGenerator
 from utilities import (get_filename, create_logging, create_folder, 
                        prec_recall_fvalue, search_meta_by_mixture_name, 
-                       get_sed_from_meta, ideal_binary_mask)
+                       get_sed_from_meta, ideal_binary_mask, FocalLoss)
 from features import LogMelExtractor
 from models_pytorch import move_data_to_gpu, get_model
 # import config
@@ -176,6 +176,8 @@ def train(config, args):
     Model = get_model(model_type)
     
     model = Model(classes_num, seq_len, mel_bins, cuda)
+    focal_loss = FocalLoss()
+    print('using focal loss')
 
     if config.use_pretrain:
         print('Loading pretrained weight ... ')
@@ -288,8 +290,10 @@ def train(config, args):
 
         model.train()
         batch_output = model(batch_x)
+
         
-        loss = F.binary_cross_entropy(batch_output, batch_y)
+        # loss = F.binary_cross_entropy(batch_output, batch_y)
+        loss = focal_loss(batch_output, batch_y)
         
         # Backward
         optimizer.zero_grad()
