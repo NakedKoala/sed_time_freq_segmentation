@@ -176,8 +176,8 @@ def train(config, args):
     Model = get_model(model_type)
     
     model = Model(classes_num, seq_len, mel_bins, cuda)
-    focal_loss = FocalLoss()
-    print('using focal loss')
+    # focal_loss = FocalLoss()
+    # print('using focal loss')
 
     if config.use_pretrain:
         print('Loading pretrained weight ... ')
@@ -292,8 +292,8 @@ def train(config, args):
         batch_output = model(batch_x)
 
         
-        # loss = F.binary_cross_entropy(batch_output, batch_y)
-        loss = focal_loss(batch_output, batch_y)
+        loss = F.binary_cross_entropy(batch_output, batch_y)
+        # loss = focal_loss(batch_output, batch_y)
         
         # Backward
         optimizer.zero_grad()
