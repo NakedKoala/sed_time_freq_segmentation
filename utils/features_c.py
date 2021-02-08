@@ -176,13 +176,13 @@ def calculate_logmel_features(config):
         for i in range(0, len(audio), config.sr * config.period):
             import pdb 
             pdb.set_trace()
-            
+
             start = i 
             end = i + config.sr * config.period
 
             audio_segment = audio[start: end]
     
-            audio_names.append(data['fname'])
+            audio_names.append(data['fname'] + str(i / config.sr))
             folds.append(data['fold'])
 
     
