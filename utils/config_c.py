@@ -21,7 +21,7 @@ class config:
   mel_bins = 128 
   overlap = 1024
   window_size = 2048
-  seq_len = 860
+  seq_len = 214
 
 
   fmin = 0

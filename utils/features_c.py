@@ -182,7 +182,7 @@ def calculate_logmel_features(config):
 
             audio_segment = audio[start: end]
     
-            audio_names.append(data['fname'] + str(i / config.sr))
+            audio_names.append(data['fname'] + "-" + str(i / config.sr))
             folds.append(data['fold'])
 
     
