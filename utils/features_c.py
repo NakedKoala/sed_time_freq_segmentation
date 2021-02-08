@@ -174,9 +174,7 @@ def calculate_logmel_features(config):
         (audio, fs) = read_audio(audio_path, target_fs=config.sr, mono=True)
 
         for i in range(0, len(audio), config.sr * config.period):
-            import pdb 
-            pdb.set_trace()
-
+           
             start = i 
             end = i + config.sr * config.period
 
