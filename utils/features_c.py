@@ -73,11 +73,8 @@ class LogMelExtractor():
         return invW
 
 
-def calculate_logmel(audio_path, sample_rate, feature_extractor):
-    
-    # Read audio
-    (audio, fs) = read_audio(audio_path, target_fs=sample_rate, mono=True)
-    
+def calculate_logmel(audio, feature_extractor):
+     
     # Extract feature
     logmel = feature_extractor.transform(audio)
 
@@ -86,16 +83,24 @@ def calculate_logmel(audio_path, sample_rate, feature_extractor):
     
     return dict
 
-def get_target_from_events(events, lb_to_ix):
+    # { 
+    # 'event_audio_name': data['fname'],
+    # 'onset': row['tmin'].item(),
+    # 'offset': row['tmax'].item(),
+    # 'event_label': 'crackles'
+    # }
+
+def get_target_from_events(events, lb_to_ix, start_time, end_time):
     
     classes_num = len(lb_to_ix)
     target = np.zeros(classes_num, dtype=np.int32)
-    
+   
     for event in events:
-        ix = lb_to_ix[event['event_label']]
-        target[ix] = 1
-        
+        if event['onset'] <= end_time and event['offset'] >= start_time:
+            ix = lb_to_ix[event['event_label']]
+            target[ix] = 1
     return target
+
 
 
 def calculate_logmel_features(config):
@@ -154,8 +159,8 @@ def calculate_logmel_features(config):
         dtype=np.int32)
         
     audio_names = []
-   
     folds = []
+    item_counts = 0
 
     for n, data in enumerate(data_list):
         
@@ -164,24 +169,38 @@ def calculate_logmel_features(config):
                 ''.format(n, len(data_list)))
             
         audio_path = audio_dir/f'{data["fname"]}'
+
+        # Read audio
+        (audio, fs) = read_audio(audio_path, target_fs=config.sr, mono=True)
+
+        for i in range(0, len(audio), config.sr * config.period):
+            import pdb 
+            pdb.set_trace()
+            
+            start = i 
+            end = i + config.sr * config.period
+
+            audio_segment = audio[start: end]
     
-        audio_names.append(data['fname'])
-        folds.append(data['fold'])
+            audio_names.append(data['fname'])
+            folds.append(data['fold'])
+
     
-        # Extract feature
-        features_dict = calculate_logmel(audio_path=audio_path, 
-                                         sample_rate=config.sr, 
-                                         feature_extractor=feature_extractor)
+            # Extract feature
+            features_dict = calculate_logmel(audio_segment,
+                                            feature_extractor=feature_extractor)
     
-        # Write out features
-        hf['logmel'].resize((n + 1, seq_len, mel_bins))
-        hf['logmel'][n] = features_dict['logmel']
+            # Write out features
+            hf['logmel'].resize((item_counts + 1, seq_len, mel_bins))
+            hf['logmel'][item_counts] = features_dict['logmel']
 
       
-        # Write out target
-        target = get_target_from_events(data['events'], lb_to_ix)
-        hf['target'].resize((n + 1, classes_num))
-        hf['target'][n] = target
+            # Write out target
+            target = get_target_from_events(data['events'], lb_to_ix, start / config.sr, end / config.sr)
+            hf['target'].resize((item_counts + 1, classes_num))
+            hf['target'][item_counts] = target
+
+            item_counts += 1
         
     hf.create_dataset(name='audio_name', 
                       data=[s.encode() for s in audio_names], 
