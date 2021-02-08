@@ -56,5 +56,7 @@ class config:
   use_pretrain = True 
   pretrain_weight = model_dir/'md_9000_iters.tar'
 
+  period = 5
+
    
 
