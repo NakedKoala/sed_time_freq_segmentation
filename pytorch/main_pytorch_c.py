@@ -227,7 +227,7 @@ def train(config, args):
             wandb.log({'iteration': iteration, 
                        'tr_loss': tr_loss,
                        'tr_auc': tr_auc,
-                       'tr_f1_score': tr_auc, 
+                       'tr_f1_score': tr_f1_score, 
                        'tr_map': tr_map })
 
 
@@ -244,7 +244,7 @@ def train(config, args):
             wandb.log({'iteration': iteration, 
                        'va_loss': va_loss,
                        'va_auc': va_auc,
-                       'va_f1_score': va_auc, 
+                       'va_f1_score': va_f1_score, 
                        'va_map': va_map })
                             
             logging.info('va_loss: {:.3f}, va_f1_score: {:.3f}, '
@@ -301,7 +301,7 @@ def train(config, args):
         optimizer.step()
 
         # Stop learning
-        if iteration == 10000:
+        if iteration == 10000 * 4:
             break
     wandb.finish()
             
